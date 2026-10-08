@@ -270,3 +270,10 @@ export function josa(word: string, pair: '이/가' | '을/를' | '은/는' | '�
   if (pair === '으로/로') return word + (batchim && !rieul ? a : b);
   return word + (batchim ? a : b);
 }
+
+/** 안내 문구용 버튼 이름 (모바일은 화면 버튼, 컴퓨터는 키보드) */
+export function keyLabel(k: 'A' | 'MENU'): string {
+  const touch = document.body.classList.contains('touch');
+  if (k === 'A') return touch ? 'A 버튼' : 'Z 키';
+  return touch ? '메뉴 버튼' : 'Enter 키';
+}

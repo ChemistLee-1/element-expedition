@@ -1,0 +1,12 @@
+{
+  "name": "원소 원정대 (The Element Expedition)",
+  "short_name": "원소 원정대",
+  "description": "원소 주기율표를 완성하라 — GBA 스타일 원소 퀴즈 채집 게임",
+  "lang": "ko",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "background_color": "#1d1b2c",
+  "theme_color": "#1d1b2c",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}

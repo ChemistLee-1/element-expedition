@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { W, H, txt, Pad, drawWindow, runScene, TextBox } from '../ui/ui';
+import { W, H, txt, Pad, drawWindow, runScene, TextBox, keyLabel } from '../ui/ui';
 import { ELEMENTS, type ElementData } from '../data/elements';
 import { TYPES, type TypeId } from '../data/types';
 import { G } from '../systems/state';
@@ -62,7 +62,7 @@ export class DexScene extends Phaser.Scene {
         info.add(txt(this, 84, 100, `${e.period}주기 ${e.group}족 자리`, { size: 's', color: '#5a6a90', shadow: null }));
         info.add(txt(this, 84, 114, '아직 만나지 못한 원소다.', { size: 's' }));
       }
-      info.add(txt(this, 84, 138, caught ? 'Z: 자세히 보기' : seen ? '채집하면 자세한 정보가 열린다!' : '', { size: 'xs', color: '#d04838', shadow: null }));
+      info.add(txt(this, 84, 138, caught ? `${keyLabel('A')}: 자세히 보기` : seen ? '채집하면 자세한 정보가 열린다!' : '', { size: 'xs', color: '#d04838', shadow: null }));
     };
     render();
 

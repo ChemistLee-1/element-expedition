@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { W, H, txt, Pad, choose } from '../ui/ui';
+import { W, H, txt, Pad, choose, keyLabel, josa } from '../ui/ui';
 import { hasSave, load, newGame, setState } from '../systems/state';
 import { playBgm, sfx } from '../systems/audio';
 import { ELEMENTS } from '../data/elements';
@@ -33,7 +33,7 @@ export class TitleScene extends Phaser.Scene {
       this.tweens.add({ targets: s, y: 96, duration: 500 + i * 40, yoyo: true, repeat: -1, ease: 'Sine.inOut', delay: i * 90 });
     });
 
-    const press = txt(this, W / 2, 132, 'Z 키를 눌러 시작', { color: '#ffffff', shadow: '#202040', align: 'center' });
+    const press = txt(this, W / 2, 132, `${josa(keyLabel('A'), '을/를')} 눌러 시작`, { color: '#ffffff', shadow: '#202040', align: 'center' });
     this.tweens.add({ targets: press, alpha: 0.2, duration: 600, yoyo: true, repeat: -1 });
     txt(this, W - 4, H - 10, 'v0.3 · 1~36번 원소', { size: 'xs', color: '#8890c0', shadow: null, align: 'right' });
 

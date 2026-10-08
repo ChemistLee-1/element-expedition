@@ -2,7 +2,14 @@
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#1d1b2c" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="원소 원정대" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
     <title>원소 원정대 (The Element Expedition)</title>
     <style>
       html, body { margin: 0; height: 100%; background: #1d1b2c; color: #d8d4f0; font-family: Galmuri11, sans-serif; }
@@ -11,10 +18,77 @@
       #game canvas { width: 100% !important; height: 100% !important; image-rendering: pixelated; border-radius: 6px; box-shadow: 0 0 0 4px #3b3756, 0 8px 30px #0008; }
       .keys { font-size: 12px; opacity: .8; text-align: center; padding: 0 16px; }
       kbd { background: #3b3756; border-radius: 3px; padding: 1px 5px; }
+      #pad { display: none; }
+
+      /* ── 모바일(터치) : 화면 컨트롤러 ───────────────── */
+      body.touch { touch-action: manipulation; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
+        overflow: hidden; height: 100dvh; gap: 0; justify-content: flex-start;
+        padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); box-sizing: border-box; }
+      body.touch .keys { display: none; }
+      body.touch #pad { display: flex; position: relative; touch-action: none; }
+      #pad button { touch-action: none; -webkit-tap-highlight-color: transparent; font-family: Galmuri11, sans-serif; border: none; color: #f0eefc;
+        cursor: pointer; padding: 0; }
+      #pad button.on { filter: brightness(1.35); transform: translateY(1px); }
+
+      .dpad { display: grid; grid-template: repeat(3, 48px) / repeat(3, 48px); }
+      .dpad button { background: #3b3756; box-shadow: inset 0 -3px 0 #26233a; font-size: 18px; }
+      .dpad .u { grid-area: 1 / 2; border-radius: 8px 8px 0 0; }
+      .dpad .l { grid-area: 2 / 1; border-radius: 8px 0 0 8px; }
+      .dpad .c { grid-area: 2 / 2; background: #3b3756; pointer-events: none; }
+      .dpad .r { grid-area: 2 / 3; border-radius: 0 8px 8px 0; }
+      .dpad .d { grid-area: 3 / 2; border-radius: 0 0 8px 8px; }
+
+      .ab { position: relative; width: 150px; height: 130px; }
+      .ab button { position: absolute; width: 64px; height: 64px; border-radius: 50%; font-size: 20px; font-weight: bold;
+        background: #8a3a78; box-shadow: inset 0 -4px 0 #5a2450, 0 2px 6px #0006; }
+      .ab .a { right: 0; top: 8px; }
+      .ab .b { left: 0; top: 52px; }
+      .ab small { position: absolute; font-size: 11px; opacity: .7; width: 64px; text-align: center; }
+      .ab .la { right: 0; top: 74px; }
+      .ab .lb { left: 0; top: 118px; }
+
+      .mid { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+      .mid button { width: 64px; height: 26px; border-radius: 13px; font-size: 12px; background: #4a4668; box-shadow: inset 0 -2px 0 #2c2944; }
+
+      /* 세로: 위는 화면, 아래는 컨트롤러 (게임보이처럼) */
+      @media (orientation: portrait) {
+        body.touch #game { width: calc(100vw - 16px); margin-top: 12px; }
+        body.touch #pad { flex: 1; width: 100%; max-width: 480px; align-items: center; justify-content: space-between; padding: 0 18px; box-sizing: border-box; }
+        body.touch .mid { position: absolute; left: 50%; bottom: 18%; transform: translateX(-50%); }
+      }
+      /* 가로: 가운데 화면, 왼쪽 방향 패드, 오른쪽 A·B */
+      @media (orientation: landscape) {
+        body.touch { justify-content: center; }
+        body.touch #game { width: min(calc(100vw - 340px), calc((100dvh - 16px) * 1.5)); height: auto; }
+        body.touch #pad { position: fixed; inset: 0; pointer-events: none; }
+        body.touch #pad > * { pointer-events: auto; }
+        body.touch .dpad { position: absolute; left: max(10px, env(safe-area-inset-left)); bottom: 16px; }
+        body.touch .ab { position: absolute; right: max(6px, env(safe-area-inset-right)); bottom: 6px; }
+        body.touch .mid { position: absolute; right: max(30px, env(safe-area-inset-right)); top: 14px; }
+      }
     </style>
   </head>
   <body>
     <div id="game"></div>
+    <div id="pad" aria-label="게임 컨트롤러">
+      <div class="dpad">
+        <button class="u" data-key="ArrowUp" aria-label="위">▲</button>
+        <button class="l" data-key="ArrowLeft" aria-label="왼쪽">◀</button>
+        <span class="c"></span>
+        <button class="r" data-key="ArrowRight" aria-label="오른쪽">▶</button>
+        <button class="d" data-key="ArrowDown" aria-label="아래">▼</button>
+      </div>
+      <div class="mid">
+        <button data-key="Enter">메뉴</button>
+        <button data-action="fullscreen" class="fs">전체화면</button>
+      </div>
+      <div class="ab">
+        <button class="a" data-key="KeyZ" aria-label="확인">A</button>
+        <button class="b" data-key="KeyX" aria-label="취소">B</button>
+        <small class="la">확인</small>
+        <small class="lb">취소</small>
+      </div>
+    </div>
     <div class="keys">
       <kbd>방향키</kbd> 이동 · <kbd>Z</kbd>/<kbd>Space</kbd> 확인 · <kbd>X</kbd> 취소 · <kbd>Enter</kbd> 메뉴
     </div>

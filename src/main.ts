@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import './fonts.css';
+import { setupTouchControls } from './touch';
 import { W, H } from './ui/ui';
 import { BootScene } from './scenes/BootScene';
 import { TitleScene } from './scenes/TitleScene';
@@ -12,6 +13,7 @@ import * as quiz from './systems/quiz';
 import { SummaryScene } from './scenes/SummaryScene';
 
 async function start() {
+  setupTouchControls();
   // 도트 폰트가 준비된 뒤에 게임을 시작해야 글자가 깨지지 않는다
   await Promise.all([
     document.fonts.load('12px Galmuri11'),

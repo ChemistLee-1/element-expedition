@@ -19,6 +19,11 @@ function ac(): AudioContext | null {
   return ctx;
 }
 
+/** 모바일 브라우저는 사용자가 화면을 터치한 그 순간에만 소리를 켤 수 있다 */
+export function unlockAudio() {
+  ac();
+}
+
 export function toggleMute(): boolean {
   muted = !muted;
   if (master) master.gain.value = muted ? 0 : 0.18;

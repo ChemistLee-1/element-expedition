@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { W, H, Pad, TextBox, tween } from '../ui/ui';
+import { W, H, Pad, TextBox, tween, keyLabel, josa } from '../ui/ui';
 import { sfx } from '../systems/audio';
 
 export class IntroScene extends Phaser.Scene {
@@ -39,13 +39,13 @@ export class IntroScene extends Phaser.Scene {
       sfx('catch');
       await box.say([
         '이건 "힌트 전구"란다. 문제를 풀 때 쓰면 틀린 보기 2개를 지워 주지.',
-        '우선 3개를 줄 테니 아껴 쓰렴. 마을 사람들을 돕거나 복습 문제를 맞히면 더 얻을 수 있단다.',
+        '우선 3개를 줄 테니 아껴 쓰렴. 마을 사람들에게 받거나 퀴즈 대결에서 이기면 더 얻을 수 있단다.',
       ]);
       bulb.destroy();
       prof.setVisible(true);
       await box.say([
         '목표는 원소를 모두 채집해서 "원소 도감", 그러니까 주기율표를 완성하는 거야!',
-        'Enter 키로 메뉴를 열면 도감과 기록을 볼 수 있어.',
+        `${josa(keyLabel('MENU'), '으로/로')} 메뉴를 열면 도감과 기록을 볼 수 있어.`,
         '그럼 원소의 세계로 출발!',
       ]);
       this.cameras.main.fadeOut(400);
