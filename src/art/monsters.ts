@@ -21,9 +21,8 @@ const SHAPES: Record<string, Shape> = {
   transition: (u, v) =>
     (Math.abs(u) ** 6 + Math.abs(v * 1.05) ** 6 <= 0.95) ||
     (v >= -1.3 && v <= -0.9 && Math.abs(u) <= 0.16 + (v + 1.3) * 0.5),
-  post: (u, v) =>
-    u * u + (v - 0.25) ** 2 <= 0.64 ||
-    (v < 0.25 && v >= -1.15 && Math.abs(u) <= (0.8 * (v + 1.15)) / 1.4),
+  // 전이후 금속(알루미늄·갈륨): 실온에서 고체이므로 금속 주괴(잉곳) 모양 — 위가 좁고 아래가 넓은 덩어리
+  post: (u, v) => v >= -0.78 && v <= 0.88 && Math.abs(u) <= 0.6 + 0.32 * ((v + 0.78) / 1.66),
   metalloid: (u, v) => Math.abs(u) <= 0.8 && Math.abs(v) <= 1.08 - 0.55 * Math.abs(u),
   nonmetal: (u, v) =>
     v <= 0.95 && (
@@ -145,9 +144,20 @@ export function drawElement(e: ElementData, back: boolean): HTMLCanvasElement {
       if (inside(x, y) && inside(x, y - 2) && inside(x, y + 2)) px(ctx, x, y, shade(body, 0.25));
     }
   } else if (e.type === 'post') {
-    for (let x = 0; x < S; x++) {
-      const y = Math.round(cy + s * 0.55 + Math.sin(x / 3) * 1.2);
-      if (inside(x, y) && inside(x, y + 2) && inside(x - 2, y)) px(ctx, x, y, shade(body, 0.3));
+    // 주괴 윗면(밝은 띠)과 앞면 경계선
+    const topY = Math.round(cy - s * 0.78);
+    const edgeY = Math.round(cy - s * 0.5);
+    for (let y = topY + 1; y < edgeY; y++) for (let x = 0; x < S; x++) {
+      if (inside(x, y) && inside(x - 1, y) && inside(x + 1, y)) px(ctx, x, y, shade(body, 0.32));
+    }
+    for (let x = 0; x < S; x++) if (inside(x - 1, edgeY) && inside(x + 1, edgeY)) px(ctx, x, edgeY, shade(body, -0.3));
+    // 금속 광택: 오른쪽 아래 사선 두 줄
+    for (let k = 0; k < 2; k++) {
+      for (let t = 0; t < Math.round(s * 0.3); t++) {
+        const x = Math.round(cx + s * (0.62 + k * 0.12)) - t;
+        const y = Math.round(cy + s * 0.2) + t;
+        if (inside(x, y) && inside(x + 2, y) && inside(x, y + 2)) px(ctx, x, y, shade(body, 0.45));
+      }
     }
   }
 
