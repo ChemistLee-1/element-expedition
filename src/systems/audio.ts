@@ -60,7 +60,7 @@ function noise(start: number, dur: number, vol = 0.4) {
   s.start(start);
 }
 
-export type Sfx = 'move' | 'select' | 'back' | 'hit' | 'super' | 'weak' | 'shake' | 'catch' | 'levelup' | 'bump' | 'heal' | 'faint' | 'encounter';
+export type Sfx = 'move' | 'select' | 'back' | 'hit' | 'super' | 'weak' | 'shake' | 'catch' | 'levelup' | 'bump' | 'heal' | 'faint' | 'encounter' | 'pop' | 'fanfare';
 
 export function sfx(name: Sfx) {
   const a = ac();
@@ -80,6 +80,8 @@ export function sfx(name: Sfx) {
     case 'heal': [784, 988, 1175, 1568].forEach((f, i) => tone(f, t + i * 0.12, 0.15, 'triangle', 0.5)); break;
     case 'faint': tone(600, t, 0.5, 'square', 0.3, 80); break;
     case 'encounter': for (let i = 0; i < 6; i++) tone(i % 2 ? 784 : 1047, t + i * 0.06, 0.05, 'square', 0.3); break;
+    case 'pop': noise(t, 0.12, 0.35); tone(1200 + Math.random() * 800, t + 0.02, 0.25, 'triangle', 0.25, 400); break;
+    case 'fanfare': [523, 523, 523, 659, 784, 659, 784, 1047].forEach((f, i) => tone(f, t + [0, 0.12, 0.24, 0.36, 0.6, 0.84, 0.96, 1.08][i], i === 7 ? 0.6 : 0.14, 'square', 0.35)); break;
   }
 }
 
@@ -95,6 +97,14 @@ function freq(n: string): number {
 
 interface Song { bpm: number; lead: string; bass: string }
 const SONGS: Record<string, Song> = {
+  // 엔딩: 밝고 신나는 축하곡 (C장조)
+  ending: {
+    bpm: 126,
+    lead: 'C5 - E5 G5 C6 - G5 - A5 - G5 E5 F5 - D5 - E5 - G5 C6 E6 - D6 C6 B5 - G5 - C6 - - - ' +
+          'A5 - C6 A5 G5 - E5 - F5 - A5 F5 E5 - C5 - D5 - F5 A5 G5 - B5 - C6 - G5 - C6 - - - ',
+    bass: 'C3 G3 C4 G3 C3 G3 C4 G3 F2 C3 F3 C3 G2 D3 G3 D3 C3 G3 C4 G3 E3 B3 E4 B3 F3 C4 G3 D4 C3 G3 C4 - ' +
+          'F2 C3 F3 C3 C3 G3 C4 G3 F2 C3 F3 C3 C3 G3 C4 G3 D3 A3 D4 A3 G2 D3 G3 D3 C3 G3 C4 G3 C3 - C3 - ',
+  },
   town: {
     bpm: 112,
     lead: 'E5 - G5 - C6 - G5 - A5 - G5 E5 - D5 - - - E5 - G5 - A5 - G5 E5 C5 - D5 - E5 - C5 - - - ' +
@@ -160,4 +170,16 @@ export function stopBgm() {
   if (timer !== null) clearInterval(timer);
   timer = null;
   current = '';
+}
+
+/** 엔딩: 원소가 칸에 들어갈 때 울리는 소리. i(0~35)가 커질수록 음이 올라간다 (장조 5음계 3옥타브) */
+export function chime(i: number) {
+  const a = ac();
+  if (!a) return;
+  const PENTA = [0, 2, 4, 7, 9];
+  const step = Math.floor((i * 15) / 36);
+  const semi = 60 + Math.floor(step / 5) * 12 + PENTA[step % 5]; // C4 부터
+  const f = 440 * Math.pow(2, (semi - 69) / 12);
+  tone(f, a.currentTime, 0.18, 'triangle', 0.5);
+  tone(f * 2, a.currentTime, 0.08, 'square', 0.12);
 }

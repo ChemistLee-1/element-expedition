@@ -8,6 +8,8 @@ export interface GameState {
   correct: number;   // 지금까지 맞힌 문제 수
   wrong: number;     // 지금까지 틀린 문제 수
   asked: Record<number, number>; // 원소별로 몇 번째 문제까지 냈는지 (다음엔 다른 문제)
+  hintsUsed?: number;  // 사용한 힌트 전구 수 (엔딩 기록용)
+  playerName?: string; // 수료증에 적을 이름
   map: string;
   x: number;
   y: number;
@@ -81,4 +83,16 @@ export function markSeen(z: number) {
 export function markCaught(z: number) {
   markSeen(z);
   if (!G.caught.includes(z)) G.caught.push(z);
+}
+
+/** 타이틀 화면용: 저장 기록을 불러오지 않고 살짝 들여다보기 */
+export function peekSave(): GameState | null {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (!raw) return null;
+    const s = JSON.parse(raw) as GameState;
+    return s.version === 3 ? s : null;
+  } catch {
+    return null;
+  }
 }

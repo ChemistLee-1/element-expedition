@@ -247,6 +247,7 @@ export class QuizScene extends Phaser.Scene {
         // 힌트: 오답 2개 지우기
         hintUsed = true;
         G.hints--;
+        G.hintsUsed = (G.hintsUsed ?? 0) + 1;
         this.drawMeInfo();
         const wrongs = Phaser.Utils.Array.Shuffle(q.choices.map((_, k) => k).filter(k => k !== q.answer && !disabled[k])).slice(0, 2);
         wrongs.forEach(k => (disabled[k] = true));

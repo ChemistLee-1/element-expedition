@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { W, H, txt, Pad, choose, keyLabel, josa } from '../ui/ui';
-import { hasSave, load, newGame, setState } from '../systems/state';
+import { hasSave, load, newGame, setState, peekSave } from '../systems/state';
 import { playBgm, sfx } from '../systems/audio';
 import { ELEMENTS } from '../data/elements';
 import { TYPES } from '../data/types';
@@ -35,7 +35,11 @@ export class TitleScene extends Phaser.Scene {
 
     const press = txt(this, W / 2, 132, `${josa(keyLabel('A'), '을/를')} 눌러 시작`, { color: '#ffffff', shadow: '#202040', align: 'center' });
     this.tweens.add({ targets: press, alpha: 0.2, duration: 600, yoyo: true, repeat: -1 });
-    txt(this, W - 4, H - 10, 'v0.3 · 1~36번 원소', { size: 'xs', color: '#8890c0', shadow: null, align: 'right' });
+    txt(this, W - 4, H - 10, 'v0.4 · 1~36번 원소', { size: 'xs', color: '#8890c0', shadow: null, align: 'right' });
+    if (peekSave()?.flags?.ending) {
+      const star = txt(this, 4, H - 11, '★ 주기율표 완성', { size: 's', color: '#ffd23a', shadow: '#5a3a00' });
+      this.tweens.add({ targets: star, alpha: 0.5, duration: 800, yoyo: true, repeat: -1 });
+    }
 
     void (async () => {
       await pad.waitFor('A', 'START');

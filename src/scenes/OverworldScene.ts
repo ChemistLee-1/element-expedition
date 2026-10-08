@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { W, H, txt, Pad, TextBox, choose, runScene, wait, tween, windowBox } from '../ui/ui';
+import { W, H, txt, Pad, TextBox, choose, runScene, wait, tween, windowBox, yesNo } from '../ui/ui';
 import { AREAS, BLOCKING, ENCOUNTER_TILES, tileAt, type Area, type Npc, type Encounter } from '../data/areas';
 import { ANIMATED } from '../art/tiles';
 import { tileKey } from './BootScene';
@@ -228,6 +228,7 @@ export class OverworldScene extends Phaser.Scene {
       }
       return;
     }
+    if (n.id === 'prof' && G.caught.length >= 36) { await this.profProgress(); return; }
     await this.box.say(n.lines);
     if (n.gift && !G.flags[`gift_${n.id}`]) {
       await this.box.say(n.gift.lines);
@@ -243,10 +244,30 @@ export class OverworldScene extends Phaser.Scene {
     const c = G.caught.length;
     const total = G.correct + G.wrong;
     const rate = total ? Math.round((G.correct / total) * 100) : 0;
+    if (c >= 36) {
+      if (!G.flags.ending) {
+        await this.box.say(['주기 박사: 오오…! 36종을 모두 모았구나!!', '모두에게 보여 줄 게 있단다. 따라오렴!']);
+      } else {
+        this.box.set('주기 박사: 주기율표가 완성된 날의\n축하 파티를 다시 볼까?');
+        if (!(await yesNo(this, this.pad))) {
+          this.box.hide();
+          await this.box.say('주기 박사: 도감의 "완성!" 도장, 정말 자랑스럽구나!');
+          return;
+        }
+        this.box.hide();
+      }
+      this.cameras.main.fadeOut(400);
+      await wait(this, 450);
+      await runScene(this, 'Ending');
+      G.flags.ending = true;
+      save();
+      playBgm(this.area.bgm);
+      this.cameras.main.fadeIn(400);
+      await this.box.say(['주기 박사: 정말 수고 많았다, 원정대원!', '도감에 "완성!" 도장을 찍어 두었단다. 언제든 다시 보고 싶으면 말을 걸렴.']);
+      return;
+    }
     await this.box.say([
-      c >= 36
-        ? '주기 박사: 36종을 모두 모았구나!! 1~4주기 주기율표 완성이다. 정말 대단해!'
-        : `주기 박사: 지금까지 ${c}종을 채집했구나. 36종까지 ${36 - c}종 남았다!`,
+      `주기 박사: 지금까지 ${c}종을 채집했구나. 36종까지 ${36 - c}종 남았다!`,
       ...(total ? [`지금까지 ${total}문제 중 ${G.correct}문제를 맞혔단다. (정답률 ${rate}%)`] : []),
     ]);
   }
@@ -326,6 +347,11 @@ export class OverworldScene extends Phaser.Scene {
     playBgm(this.area.bgm);
     if (result === 'caught') {
       const [have, total] = this.villageCount();
+      if (G.caught.length >= 36 && !G.flags.ending) {
+        sfx('levelup');
+        save();
+        await this.box.say(['36종을 모두 모았다!! 원소 주기율표 완성이다!', '1족 마을의 주기 박사에게 가 보자!']);
+      }
       if (have >= total) {
         sfx('levelup');
         const gate = this.area.npcs.some(n => n.gate);

@@ -35,6 +35,12 @@ export class DexScene extends Phaser.Scene {
       txt(this, x + 7, y - 1, TYPES[t].short, { size: 'xs', color: '#c0c4e0', shadow: null });
     });
 
+    // 36종 완성: 금색 테두리
+    const complete = G.caught.length >= 36;
+    if (complete) {
+      g.lineStyle(2, 0xf0c040, 1).strokeRect(OX - 2, OY - 1, 18 * CW + 3, 4 * CH + 2);
+    }
+
     const cursor = this.add.rectangle(0, 0, CW + 1, CH + 1).setOrigin(0).setStrokeStyle(2, 0xffffff);
     this.tweens.add({ targets: cursor, alpha: 0.4, duration: 400, yoyo: true, repeat: -1 });
 
@@ -65,6 +71,15 @@ export class DexScene extends Phaser.Scene {
       info.add(txt(this, 84, 138, caught ? `${keyLabel('A')}: 자세히 보기` : seen ? '채집하면 자세한 정보가 열린다!' : '', { size: 'xs', color: '#d04838', shadow: null }));
     };
     render();
+
+    // 36종 완성: 빨간 "완성!" 도장
+    if (complete) {
+      const stamp = this.add.container(W - 24, 140).setDepth(20).setAngle(-14);
+      const sg = this.add.graphics();
+      sg.fillStyle(0xfff4f0, 0.6).fillCircle(0, 0, 18);
+      sg.lineStyle(2, 0xd03028, 1).strokeCircle(0, 0, 18).strokeCircle(0, 0, 15);
+      stamp.add([sg, txt(this, 0, -7, '완성!', { color: '#d03028', shadow: null, align: 'center' }).setFontStyle('bold')]);
+    }
 
     void (async () => {
       for (;;) {

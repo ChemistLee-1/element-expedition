@@ -11,6 +11,7 @@ import { DexScene } from './scenes/DexScene';
 import * as state from './systems/state';
 import * as quiz from './systems/quiz';
 import { SummaryScene } from './scenes/SummaryScene';
+import { EndingScene } from './scenes/EndingScene';
 
 async function start() {
   setupTouchControls();
@@ -36,7 +37,7 @@ async function start() {
     backgroundColor: '#101018',
     scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
     // 뒤에 있을수록 화면 위에 그려진다
-    scene: [BootScene, TitleScene, IntroScene, OverworldScene, QuizScene, SummaryScene, DexScene],
+    scene: [BootScene, TitleScene, IntroScene, OverworldScene, QuizScene, SummaryScene, DexScene, EndingScene],
   });
   if (debug) Object.assign(window, { __game: game, __dbg: { state, quiz } });
 }
