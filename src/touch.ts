@@ -16,14 +16,12 @@ function send(type: 'keydown' | 'keyup', code: string) {
   window.dispatchEvent(ev);
 }
 
-/** 휴대폰·태블릿처럼 "터치가 주 입력"인 기기만 (터치스크린 노트북은 키보드를 쓰므로 제외) */
-export function isTouchDevice(): boolean {
-  if (new URLSearchParams(location.search).has('touch')) return true; // 컴퓨터에서 모바일 화면 미리보기용
-  return matchMedia('(pointer: coarse)').matches && !matchMedia('(any-pointer: fine)').matches;
-}
-
+/**
+ * 모바일 전용 화면: 기기를 판별하지 않고 항상 화면 컨트롤러를 보여 준다.
+ * (메신저 앱 안 브라우저 등에서 기기 판별이 틀리는 문제를 없애기 위해)
+ * 컴퓨터에서도 같은 화면이 나오며, 키보드 조작도 그대로 된다.
+ */
 export function setupTouchControls() {
-  if (!isTouchDevice()) return;
   document.body.classList.add('touch');
 
   const pad = document.getElementById('pad');
