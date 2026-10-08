@@ -44,7 +44,7 @@ export class TitleScene extends Phaser.Scene {
     void (async () => {
       await pad.waitFor('A', 'START');
       sfx('select');
-      playBgm('town');
+      playBgm('title');
       press.destroy();
       const items = hasSave() ? ['이어하기', '새 게임'] : ['새 게임'];
       for (;;) {

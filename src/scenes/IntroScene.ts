@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { W, H, Pad, TextBox, tween, keyLabel, josa } from '../ui/ui';
-import { sfx } from '../systems/audio';
+import { sfx, playBgm } from '../systems/audio';
 
 export class IntroScene extends Phaser.Scene {
   constructor() { super('Intro'); }
@@ -12,6 +12,7 @@ export class IntroScene extends Phaser.Scene {
     g.fillRect(0, 0, W, H);
     const prof = this.add.image(W / 2, 58, 'npc_prof', 0).setScale(4);
     const box = new TextBox(this, pad);
+    playBgm('intro');
 
     void (async () => {
       await box.say([

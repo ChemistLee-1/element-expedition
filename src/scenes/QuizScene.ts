@@ -5,7 +5,7 @@ import { TYPES, type TypeId } from '../data/types';
 import type { Theme } from '../data/areas';
 import { G, markSeen, markCaught } from '../systems/state';
 import { nextQuestion, randomLifeQuestion, type Question } from '../systems/quiz';
-import { playBgm, sfx } from '../systems/audio';
+import { playBgm, playJingle, sfx } from '../systems/audio';
 
 // 퀴즈 채집: 자연 상태의 원소는 정체를 모르는 채로 나타난다.
 // "이 원소는 무엇일까?" 문제를 맞히면 정체가 밝혀지고 채집된다. (레벨·HP 없음)
@@ -59,7 +59,7 @@ export class QuizScene extends Phaser.Scene {
     this.score = 0;
     this.foeInfo = undefined;
     this.meInfo = undefined;
-    playBgm('battle');
+    playBgm(data.kind === 'trainer' ? 'duel' : 'quiz');
 
     const [sky1, sky2, ground] = BG[data.theme ?? 'town'];
     const g = this.add.graphics();
@@ -168,6 +168,7 @@ export class QuizScene extends Phaser.Scene {
     }
     await this.reveal(z);
     await this.box.say([`정체는 ${e.name}(${e.sym})이었다!`, q.ex]);
+    void playJingle('fled');
     await tween(this, { targets: this.foeSprite, x: W + 40, duration: 500 });
     await this.box.say([`${josa(e.name, '은/는')} 도망쳐 버렸다…`, '다시 만나면 다른 문제로 또 도전할 수 있어!']);
     return 'fled';
@@ -211,11 +212,11 @@ export class QuizScene extends Phaser.Scene {
     trainer.setX(W + 40);
     await tween(this, { targets: trainer, x: ENEMY_POS.x, duration: 300 });
     if (this.score >= TRAINER_NEED) {
-      playBgm('town');
-      sfx('levelup');
+      void playJingle('win');
       await this.box.say(`${josa(d.trainerName!, '와/과')}의 퀴즈 대결에서 이겼다!`);
       return 'win';
     }
+    void playJingle('lose');
     await this.box.say(['아쉽게 졌다…', '도감에서 원소 정보를 다시 보고 재도전해 보자!']);
     return 'lose';
   }
@@ -311,7 +312,7 @@ export class QuizScene extends Phaser.Scene {
       icon.setAngle(0);
     }
     await wait(this, 250);
-    sfx('catch');
+    void playJingle('caught');
     for (let i = 0; i < 8; i++) {
       const s = this.add.rectangle(icon.x, icon.y, 2, 2, 0xfff4a0).setDepth(61);
       const a = (i / 8) * Math.PI * 2;

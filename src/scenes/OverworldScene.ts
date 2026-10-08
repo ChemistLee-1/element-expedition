@@ -4,7 +4,7 @@ import { AREAS, BLOCKING, ENCOUNTER_TILES, tileAt, type Area, type Npc, type Enc
 import { ANIMATED } from '../art/tiles';
 import { tileKey } from './BootScene';
 import { G, save, type Dir } from '../systems/state';
-import { playBgm, sfx, toggleMute } from '../systems/audio';
+import { playBgm, playJingle, sfx, toggleMusic, toggleSfx, isMusicOn, isSfxOn } from '../systems/audio';
 import type { QuizData, QuizResult } from './QuizScene';
 
 const T = 16;
@@ -348,12 +348,12 @@ export class OverworldScene extends Phaser.Scene {
     if (result === 'caught') {
       const [have, total] = this.villageCount();
       if (G.caught.length >= 36 && !G.flags.ending) {
-        sfx('levelup');
+        void playJingle('clear', this.area.bgm);
         save();
         await this.box.say(['36종을 모두 모았다!! 원소 주기율표 완성이다!', '1족 마을의 주기 박사에게 가 보자!']);
       }
       if (have >= total) {
-        sfx('levelup');
+        void playJingle('clear', this.area.bgm);
         const gate = this.area.npcs.some(n => n.gate);
         await this.box.say(`${this.area.group} 원소 ${total}종을 모두 채집했다!${gate ? ' 동쪽 문지기가 길을 비켜 준다.' : ''}`);
         this.scene.restart();
@@ -369,8 +369,8 @@ export class OverworldScene extends Phaser.Scene {
     sfx('select');
     let start = 0;
     for (;;) {
-      const items = ['도감', '기록', '저장', '소리', '닫기'];
-      const i = await choose(this, this.pad, { x: W - 70, y: 2, w: 68, items, cancel: true, start });
+      const items = ['도감', '기록', '저장', `음악 ${isMusicOn() ? '켬' : '끔'}`, `효과음 ${isSfxOn() ? '켬' : '끔'}`, '닫기'];
+      const i = await choose(this, this.pad, { x: W - 88, y: 2, w: 86, items, cancel: true, start });
       start = Math.max(0, i);
       if (i === 0) await runScene(this, 'Dex');
       else if (i === 1) {
@@ -383,8 +383,12 @@ export class OverworldScene extends Phaser.Scene {
         const ok = save();
         await this.box.say(ok ? '모험 기록을 저장했다!' : '저장에 실패했다… (브라우저 저장소를 확인해 주세요)');
       } else if (i === 3) {
-        const m = toggleMute();
-        await this.box.say(m ? '소리를 껐다.' : '소리를 켰다.');
+        const on = toggleMusic();
+        await this.box.say(on ? '배경 음악을 켰다.' : '배경 음악을 껐다.');
+      } else if (i === 4) {
+        const on = toggleSfx();
+        if (on) sfx('select');
+        await this.box.say(on ? '효과음을 켰다.' : '효과음을 껐다.');
       } else return;
     }
   }

@@ -67,7 +67,7 @@ const guard = (id: string, next: string, look: Npc['look'], openTo: { x: number;
 
 const DEFS: AreaDef[] = [
   {
-    id: 'g1', name: '알칼리 금속 마을', group: '1족', temp: 293, theme: 'town', bgm: 'town', encTile: ',',
+    id: 'g1', name: '알칼리 금속 마을', group: '1족', temp: 293, theme: 'town', bgm: 'g1', encTile: ',',
     map: [
       '####################',
       '#..RRRRR....RRRR...#',
@@ -100,7 +100,7 @@ const DEFS: AreaDef[] = [
     signs: [{ x: 17, y: 9, lines: ['1족 · 알칼리 금속 마을', '사는 원소: 4종 (1족)', '→ 동쪽: 2족 마을'] }],
   },
   {
-    id: 'g2', name: '알칼리 토금속 마을', group: '2족', temp: 300, theme: 'beach', bgm: 'route', encTile: ':', ground: 's',
+    id: 'g2', name: '알칼리 토금속 마을', group: '2족', temp: 300, theme: 'beach', bgm: 'g2', encTile: ':', ground: 's',
     map: [
       '####################',
       '#..ffff......ffff..#',
@@ -129,7 +129,7 @@ const DEFS: AreaDef[] = [
     signs: [{ x: 6, y: 5, lines: ['2족 · 알칼리 토금속 마을', '조개껍데기와 바닷물 속에 2족 원소가 숨어 있다.'] }],
   },
   {
-    id: 'g3_12', name: '전이 금속 마을', group: '3~12족', temp: 288, theme: 'mine', bgm: 'cave', encTile: 'x', ground: 'c',
+    id: 'g3_12', name: '전이 금속 마을', group: '3~12족', temp: 288, theme: 'mine', bgm: 'g3_12', encTile: 'x', ground: 'c',
     map: [
       'rrrrrrrrrrrrrrrrrrrr',
       'rxxxxccrrrrrrccxxxxr',
@@ -159,7 +159,7 @@ const DEFS: AreaDef[] = [
     signs: [],
   },
   {
-    id: 'g13', name: '붕소족 마을', group: '13족', temp: 298, theme: 'city', bgm: 'town', encTile: 'q', ground: 'p',
+    id: 'g13', name: '붕소족 마을', group: '13족', temp: 298, theme: 'city', bgm: 'g13', encTile: 'q', ground: 'p',
     map: [
       'KKKKKKKKKKKKKKKKKKKK',
       'KKNNKKqqqppqqqKKNNKK',
@@ -184,7 +184,7 @@ const DEFS: AreaDef[] = [
     signs: [],
   },
   {
-    id: 'g14', name: '탄소족 마을', group: '14족', temp: 291, theme: 'forest', bgm: 'route', encTile: ',',
+    id: 'g14', name: '탄소족 마을', group: '14족', temp: 291, theme: 'forest', bgm: 'g14', encTile: ',',
     map: [
       '####################',
       '#,,,,###....###,,,,#',
@@ -213,7 +213,7 @@ const DEFS: AreaDef[] = [
     signs: [{ x: 8, y: 4, lines: ['14족 · 탄소족 숲 마을', '사는 원소: 3종 (14족)'] }],
   },
   {
-    id: 'g15', name: '질소족 마을', group: '15족', temp: 293, theme: 'forest', bgm: 'route', encTile: ',',
+    id: 'g15', name: '질소족 마을', group: '15족', temp: 293, theme: 'forest', bgm: 'g15', encTile: ',',
     map: [
       '####################',
       '#FFFFFFF....FFFFFFF#',
@@ -239,7 +239,7 @@ const DEFS: AreaDef[] = [
     signs: [{ x: 9, y: 4, lines: ['15족 · 질소족 농장 마을', '사는 원소: 3종 (15족)'] }],
   },
   {
-    id: 'g16', name: '산소족 마을', group: '16족', temp: 600, theme: 'volcano', bgm: 'cave', encTile: 'A', ground: 'a',
+    id: 'g16', name: '산소족 마을', group: '16족', temp: 600, theme: 'volcano', bgm: 'g16', encTile: 'A', ground: 'a',
     map: [
       'llllllllllllllllllll',
       'lAAAAaaallllaaaAAAAl',
@@ -267,7 +267,7 @@ const DEFS: AreaDef[] = [
     signs: [{ x: 7, y: 3, lines: ['16족 · 산소족 화산 마을', '경고! 기온 600 K (약 327 ℃)'] }],
   },
   {
-    id: 'g17', name: '할로젠 마을', group: '17족', temp: 305, theme: 'beach', bgm: 'route', encTile: ':', ground: 's',
+    id: 'g17', name: '할로젠 마을', group: '17족', temp: 305, theme: 'beach', bgm: 'g17', encTile: ':', ground: 's',
     map: [
       '####################',
       '#ss~~~ss~~~ss~~~sss#',
@@ -293,7 +293,7 @@ const DEFS: AreaDef[] = [
     signs: [{ x: 10, y: 5, lines: ['17족 · 할로젠 염전 마을', '여름 기온 32 ℃ (305 K)'] }],
   },
   {
-    id: 'g18', name: '비활성 기체 마을', group: '18족', temp: 298, theme: 'city', bgm: 'town', encTile: 'q', ground: 'p',
+    id: 'g18', name: '비활성 기체 마을', group: '18족', temp: 298, theme: 'city', bgm: 'g18', encTile: 'q', ground: 'p',
     map: [
       'KKKKKKKKKKKKKKKKKKKK',
       'KKNNKKqqqppqqqKKNNKK',

@@ -389,6 +389,7 @@ export class EndingScene extends Phaser.Scene {
   // ── 7. 엔딩 크레딧 ──────────────────────────────────
   private async stepCredits() {
     this.begin();
+    playBgm('credits');
     const black = this.add.rectangle(0, 0, W, H, 0x0c0c18).setOrigin(0);
     this.stage.add(black);
     const name = G.playerName ?? '원소 탐험가';
@@ -448,6 +449,7 @@ export class EndingScene extends Phaser.Scene {
   // ── 8. 다음 원정 예고 ────────────────────────────────
   private async stepTeaser() {
     this.begin();
+    playBgm('teaser');
     this.stage.add(this.add.rectangle(0, 0, W, H, 0x000000).setOrigin(0));
     const t1 = txt(this, W / 2, 6, '하지만…', { color: '#ffffff', shadow: null, align: 'center' }).setAlpha(0);
     const t2 = txt(this, W / 2, 20, '주기율표에는 아직 82종의 원소가 남아 있다.', { size: 's', color: '#c8d0ff', shadow: null, align: 'center' }).setAlpha(0);
