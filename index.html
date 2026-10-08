@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>원소 원정대 (The Element Expedition)</title>
+    <style>
+      html, body { margin: 0; height: 100%; background: #1d1b2c; color: #d8d4f0; font-family: Galmuri11, sans-serif; }
+      body { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; }
+      #game { width: min(96vw, calc((100vh - 60px) * 1.5)); aspect-ratio: 3 / 2; }
+      #game canvas { width: 100% !important; height: 100% !important; image-rendering: pixelated; border-radius: 6px; box-shadow: 0 0 0 4px #3b3756, 0 8px 30px #0008; }
+      .keys { font-size: 12px; opacity: .8; text-align: center; padding: 0 16px; }
+      kbd { background: #3b3756; border-radius: 3px; padding: 1px 5px; }
+    </style>
+  </head>
+  <body>
+    <div id="game"></div>
+    <div class="keys">
+      <kbd>방향키</kbd> 이동 · <kbd>Z</kbd>/<kbd>Space</kbd> 확인 · <kbd>X</kbd> 취소 · <kbd>Enter</kbd> 메뉴
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
