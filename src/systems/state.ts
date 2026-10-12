@@ -10,6 +10,8 @@ export interface GameState {
   asked: Record<number, number>; // 원소별로 몇 번째 문제까지 냈는지 (다음엔 다른 문제)
   hintsUsed?: number;  // 사용한 힌트 전구 수 (엔딩 기록용)
   playerName?: string; // 수료증에 적을 이름
+  playMs?: number;     // 전체 플레이 시간 (밀리초, 타이틀 화면 제외)
+  clearMs?: number;    // 엔딩을 처음 본 순간의 플레이 시간 (수료증 기록용)
   map: string;
   x: number;
   y: number;
@@ -83,6 +85,13 @@ export function markSeen(z: number) {
 export function markCaught(z: number) {
   markSeen(z);
   if (!G.caught.includes(z)) G.caught.push(z);
+}
+
+/** 플레이 시간 표시: "1시간 5분 30초" / "12분 8초" */
+export function fmtPlayTime(ms: number): string {
+  const t = Math.floor(ms / 1000);
+  const h = Math.floor(t / 3600), m = Math.floor((t % 3600) / 60), s = t % 60;
+  return h ? `${h}시간 ${m}분 ${s}초` : `${m}분 ${s}초`;
 }
 
 /** 타이틀 화면용: 저장 기록을 불러오지 않고 살짝 들여다보기 */

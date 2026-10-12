@@ -3,7 +3,7 @@ import { W, H, txt, Pad, TextBox, choose, runScene, wait, tween, windowBox, yesN
 import { AREAS, BLOCKING, ENCOUNTER_TILES, tileAt, type Area, type Npc, type Encounter } from '../data/areas';
 import { ANIMATED } from '../art/tiles';
 import { tileKey } from './BootScene';
-import { G, save, type Dir } from '../systems/state';
+import { G, save, fmtPlayTime, type Dir } from '../systems/state';
 import { playBgm, playJingle, sfx, toggleMusic, toggleSfx, isMusicOn, isSfxOn } from '../systems/audio';
 import type { QuizData, QuizResult } from './QuizScene';
 
@@ -228,7 +228,8 @@ export class OverworldScene extends Phaser.Scene {
       }
       return;
     }
-    if (n.id === 'prof' && G.caught.length >= 36) { await this.profProgress(); return; }
+    const doctor = n.id === 'prof' || n.id === 'jok';
+    if (doctor && G.caught.length >= 36) { await this.profProgress(n.name); return; }
     await this.box.say(n.lines);
     if (n.gift && !G.flags[`gift_${n.id}`]) {
       await this.box.say(n.gift.lines);
@@ -237,37 +238,41 @@ export class OverworldScene extends Phaser.Scene {
       sfx('catch');
       await this.box.say(`힌트 전구 ${n.gift.hints}개를 받았다! (가진 전구 ${G.hints}개)`);
     }
-    if (n.id === 'prof') await this.profProgress();
+    if (doctor) await this.profProgress(n.name);
   }
 
-  private async profProgress() {
+  /** 박사(1족 주기 박사 · 18족 족 박사)의 진행 확인. 36종을 모두 모았으면 엔딩으로 */
+  private async profProgress(who = '주기 박사') {
     const c = G.caught.length;
     const total = G.correct + G.wrong;
     const rate = total ? Math.round((G.correct / total) * 100) : 0;
     if (c >= 36) {
       if (!G.flags.ending) {
-        await this.box.say(['주기 박사: 오오…! 36종을 모두 모았구나!!', '모두에게 보여 줄 게 있단다. 따라오렴!']);
+        await this.box.say(who === '족 박사'
+          ? ['족 박사: 오오…! 36종을 모두 모았구나!!', '방금 주기 박사에게 연락했더니, 벌써 축하하러 달려왔단다!', '모두에게 보여 줄 게 있어. 따라오렴!']
+          : ['주기 박사: 오오…! 36종을 모두 모았구나!!', '모두에게 보여 줄 게 있단다. 따라오렴!']);
       } else {
-        this.box.set('주기 박사: 주기율표가 완성된 날의\n축하 파티를 다시 볼까?');
+        this.box.set(`${who}: 주기율표가 완성된 날의\n축하 파티를 다시 볼까?`);
         if (!(await yesNo(this, this.pad))) {
           this.box.hide();
-          await this.box.say('주기 박사: 도감의 "완성!" 도장, 정말 자랑스럽구나!');
+          await this.box.say(`${who}: 도감의 "완성!" 도장, 정말 자랑스럽구나!`);
           return;
         }
         this.box.hide();
       }
       this.cameras.main.fadeOut(400);
       await wait(this, 450);
+      G.clearMs ??= G.playMs ?? 0; // 수료증의 플레이 시간은 처음 완성한 순간으로 고정
       await runScene(this, 'Ending');
       G.flags.ending = true;
       save();
       playBgm(this.area.bgm);
       this.cameras.main.fadeIn(400);
-      await this.box.say(['주기 박사: 정말 수고 많았다, 원정대원!', '도감에 "완성!" 도장을 찍어 두었단다. 언제든 다시 보고 싶으면 말을 걸렴.']);
+      await this.box.say([`${who}: 정말 수고 많았다, 원정대원!`, '도감에 "완성!" 도장을 찍어 두었단다. 언제든 다시 보고 싶으면 말을 걸렴.']);
       return;
     }
     await this.box.say([
-      `주기 박사: 지금까지 ${c}종을 채집했구나. 36종까지 ${36 - c}종 남았다!`,
+      `${who}: 지금까지 ${c}종을 채집했구나. 36종까지 ${36 - c}종 남았다!`,
       ...(total ? [`지금까지 ${total}문제 중 ${G.correct}문제를 맞혔단다. (정답률 ${rate}%)`] : []),
     ]);
   }
@@ -350,7 +355,7 @@ export class OverworldScene extends Phaser.Scene {
       if (G.caught.length >= 36 && !G.flags.ending) {
         void playJingle('clear', this.area.bgm);
         save();
-        await this.box.say(['36종을 모두 모았다!! 원소 주기율표 완성이다!', '1족 마을의 주기 박사에게 가 보자!']);
+        await this.box.say(['36종을 모두 모았다!! 원소 주기율표 완성이다!', '18족 마을의 족 박사에게 가 보자!']);
       }
       if (have >= total) {
         void playJingle('clear', this.area.bgm);
@@ -378,6 +383,7 @@ export class OverworldScene extends Phaser.Scene {
         await this.box.say([
           `원소 도감: 채집 ${G.caught.length}/36 · 발견 ${G.seen.length}/36`,
           `푼 문제 ${total}개 · 정답 ${G.correct}개 · 힌트 전구 ${G.hints}개`,
+          `플레이 시간: ${fmtPlayTime(G.playMs ?? 0)}`,
         ]);
       } else if (i === 2) {
         const ok = save();

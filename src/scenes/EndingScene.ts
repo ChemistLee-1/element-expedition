@@ -3,10 +3,10 @@ import { W, H, txt, Pad, TextBox, wait, tween, drawWindow } from '../ui/ui';
 import { ELEMENTS, el, villageOf, villageMembers, VILLAGE_ORDER, type ElementData, type VillageKey } from '../data/elements';
 import { TYPES } from '../data/types';
 import { AREAS } from '../data/areas';
-import { G } from '../systems/state';
+import { G, fmtPlayTime } from '../systems/state';
 import { playBgm, sfx, chime } from '../systems/audio';
 
-// 엔딩: 36종을 모두 모은 뒤 주기 박사에게 말을 걸면 시작된다.
+// 엔딩: 36종을 모두 모은 뒤 18족 마을의 족 박사(또는 1족 마을의 주기 박사)에게 말을 걸면 시작된다.
 //  1 박사의 축하 → 2 원소 입장(원자 번호 순) → 3 축하 파티(불꽃 반응 불꽃놀이) → 4 화합물 합체 인사
 //  → 5 원정 기록 → 6 수료증 → 7 크레딧 → 8 다음 원정 예고
 // B 버튼으로 연출 단계를 건너뛸 수 있다.
@@ -92,15 +92,17 @@ export class EndingScene extends Phaser.Scene {
 
   // ── 1. 박사의 축하 인사 ─────────────────────────────
   private async stepProfessor() {
-    const prof = this.add.image(W / 2, 64, 'npc_prof', 0).setScale(4);
-    this.stage.add(prof);
+    const prof = this.add.image(W / 2 - 36, 64, 'npc_prof', 0).setScale(4);
+    const jok = this.add.image(W / 2 + 36, 64, 'npc_jok', 0).setScale(4);
+    this.stage.add([prof, jok]);
     this.cameras.main.fadeIn(500);
     await this.box.say([
+      '족 박사: 주기 박사, 이 원정대원이 해냈다네!',
       '주기 박사: 드디어… 1주기 수소부터 4주기 크립톤까지!',
       '원정대원이 모은 36종의 원소가 한자리에 모였단다.',
-      '자, 모두 주기율표의 자기 자리로 들어가 볼까?',
+      '족 박사: 가로줄은 주기, 세로줄은 족! 자, 모두 주기율표의 자기 자리로 들어가 볼까?',
     ]);
-    await tween(this, { targets: prof, alpha: 0, duration: 400 });
+    await tween(this, { targets: [prof, jok], alpha: 0, duration: 400 });
     this.clearStage();
   }
 
@@ -288,6 +290,7 @@ export class EndingScene extends Phaser.Scene {
     this.stage.add(g);
     const rows: [string, string][] = [
       ['채집한 원소', `${G.caught.length} / 36종`],
+      ['플레이 시간', fmtPlayTime(G.clearMs ?? G.playMs ?? 0)],
       ['푼 문제', `${total}개 (정답 ${G.correct}개)`],
       ['정답률', `${rate}%`],
       ['사용한 힌트 전구', `${G.hintsUsed ?? 0}개`],
@@ -296,8 +299,8 @@ export class EndingScene extends Phaser.Scene {
     ];
     this.stage.add(txt(this, W / 2, 12, '★ 나의 원정 기록 ★', { color: '#d04838', align: 'center' }));
     rows.forEach(([k, v], i) => {
-      this.stage.add(txt(this, 20, 32 + i * 14, k, { size: 's', color: '#5a6a90', shadow: null }));
-      this.stage.add(txt(this, W - 20, 32 + i * 14, v, { size: 's', align: 'right' }));
+      this.stage.add(txt(this, 20, 30 + i * 12, k, { size: 's', color: '#5a6a90', shadow: null }));
+      this.stage.add(txt(this, W - 20, 30 + i * 12, v, { size: 's', align: 'right' }));
     });
     this.stage.add(txt(this, W / 2, 120, '칭호', { size: 's', color: '#5a6a90', shadow: null, align: 'center' }));
     const t = txt(this, W / 2, 132, title, { color: '#c08010', shadow: '#f8e8b0', align: 'center' }).setScale(1.3);
@@ -362,14 +365,15 @@ export class EndingScene extends Phaser.Scene {
     this.stage.add(g);
     const dark = '#4a3a20';
     const add = (o: Phaser.GameObjects.GameObject) => this.stage.add(o);
-    add(txt(this, W / 2, 12, '수  료  증', { color: dark, shadow: '#e8d8a8', align: 'center' }).setScale(1.6).setFontStyle('bold'));
-    add(txt(this, W / 2, 33, '원소 원정대 · The Element Expedition', { size: 'xs', color: '#8a7a50', shadow: null, align: 'center' }));
-    add(txt(this, W / 2, 43, `이름: ${name}`, { color: dark, shadow: null, align: 'center' }));
-    add(txt(this, 20, 58, '위 원정대원은 1~4주기 원소 36종의 정체를 모두 밝혀 원소 주기율표를 완성하였으므로 이 증서를 수여합니다.',
+    add(txt(this, W / 2, 9, '수  료  증', { color: dark, shadow: '#e8d8a8', align: 'center' }).setScale(1.6).setFontStyle('bold'));
+    add(txt(this, W / 2, 29, '원소 원정대 · The Element Expedition', { size: 'xs', color: '#8a7a50', shadow: null, align: 'center' }));
+    add(txt(this, W / 2, 37, `이름: ${name}`, { color: dark, shadow: null, align: 'center' }));
+    add(txt(this, 20, 51, '위 원정대원은 1~4주기 원소 36종의 정체를 모두 밝혀 원소 주기율표를 완성하였으므로 이 증서를 수여합니다.',
       { size: 's', color: dark, shadow: null, wrap: W - 40 }));
-    add(txt(this, W / 2, 99, `칭호: ${title} · 정답률 ${rate}%`, { size: 's', color: '#a06010', shadow: null, align: 'center' }));
-    add(txt(this, W / 2, 112, `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`, { size: 's', color: dark, shadow: null, align: 'center' }));
-    add(txt(this, W / 2 - 10, 125, '원소 원정대 대장  주기 박사', { size: 's', color: dark, shadow: null, align: 'center' }));
+    add(txt(this, W / 2, 92, `칭호: ${title} · 정답률 ${rate}%`, { size: 's', color: '#a06010', shadow: null, align: 'center' }));
+    add(txt(this, W / 2, 103, `플레이 시간: ${fmtPlayTime(G.clearMs ?? G.playMs ?? 0)}`, { size: 's', color: '#a06010', shadow: null, align: 'center' }));
+    add(txt(this, W / 2, 114, `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`, { size: 's', color: dark, shadow: null, align: 'center' }));
+    add(txt(this, W / 2 - 10, 125, '원소 원정대  주기 박사 · 족 박사', { size: 's', color: dark, shadow: null, align: 'center' }));
     // 도장
     const stamp = this.add.container(W - 36, 126);
     const sg = this.add.graphics();
@@ -398,7 +402,7 @@ export class EndingScene extends Phaser.Scene {
       ['— 만든 사람 —', 'h'], [CREATOR, 't'], ['', 'b'],
       ['— 등장 원소 —', 'h'], ['1번 수소 ~ 36번 크립톤', 'b'], ['모두 36종', 'b'], ['', 'b'],
       ['— 원정 마을 —', 'h'], ['1족부터 18족까지 9개 마을', 'b'], ['', 'b'],
-      ['— 등장인물 —', 'h'], ['주기 박사', 'b'], ['광부 · 농부 · 화산학자', 'b'], ['조개 줍는 아이 · 공장장', 'b'],
+      ['— 등장인물 —', 'h'], ['주기 박사 · 족 박사', 'b'], ['광부 · 농부 · 화산학자', 'b'], ['조개 줍는 아이 · 공장장', 'b'],
       ['식물학자 · 염전 일꾼', 'b'], ['네온사인 장인 · 문지기들', 'b'], ['', 'b'],
       ['— 폰트 —', 'h'], ['Galmuri (Lee Minseo · SIL OFL)', 'b'], ['', 'b'],
       ['— 그리고 원정대원 —', 'h'], [name, 't'], ['', 'b'], ['', 'b'],

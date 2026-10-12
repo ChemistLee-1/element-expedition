@@ -39,6 +39,11 @@ async function start() {
     // 뒤에 있을수록 화면 위에 그려진다
     scene: [BootScene, TitleScene, IntroScene, OverworldScene, QuizScene, SummaryScene, DexScene, EndingScene],
   });
+  // 전체 플레이 시간 (타이틀 화면은 빼고, 창이 가려져 멈춘 동안도 빼고)
+  game.events.on('step', (_time: number, delta: number) => {
+    if (game.scene.isActive('Boot') || game.scene.isActive('Title')) return;
+    state.G.playMs = (state.G.playMs ?? 0) + Math.min(delta, 250);
+  });
   if (debug) Object.assign(window, { __game: game, __dbg: { state, quiz } });
 }
 
